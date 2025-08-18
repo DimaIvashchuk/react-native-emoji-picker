@@ -2,12 +2,22 @@
   "name": "react-native-emoji-picker",
   "version": "0.1.0",
   "main": "dist/index.js",
+  "keywords": [
+    "react-native",
+    "emoji",
+    "picker",
+    "component",
+    "expo"
+  ],
   "scripts": {
     "build": "tsc --watch",
     "example": "cp -r dist/. example/dist"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Dmytro Ivashchuk",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DimaIvashchuk/react-native-emoji-picker"
+  },
   "license": "ISC",
   "description": "",
   "devDependencies": {
