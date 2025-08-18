@@ -118,6 +118,33 @@ export interface TranslationLangObject {
 export type Translation = Record<string, TranslationLangObject>;
 ```
 
+### `Theme`
+
+Structure for theme configuration:
+
+```typescript
+export interface Theme {
+  toolbar: {
+    icon: {
+      defaultColor: string;
+      activeColor: string;
+    };
+    container: ViewStyle;
+  };
+}
+```
+
+### `ModedTheme`
+
+Structure for light and dark mode themes:
+
+```typescript
+export interface ModedTheme {
+  light: Theme;
+  dark: Theme;
+}
+```
+
 ## Contributing
 
 Contributions are welcome! Please submit a pull request or open an issue on the [GitHub repository](https://github.com/DimaIvashchuk/react-native-emoji-picker) for bug reports, feature requests, or improvements.
