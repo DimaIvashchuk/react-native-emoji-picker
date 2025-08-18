@@ -1,0 +1,32 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@gorhom/bottom-sheet": "^5.2.0",
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "emoji-datasource": "^15.1.2",
+    "expo": "~53.0.20",
+    "expo-status-bar": "~2.2.3",
+    "grapheme-splitter": "^1.0.4",
+    "react": "19.0.0",
+    "react-native": "0.79.5",
+    "react-native-gesture-handler": "^2.28.0",
+    "react-native-reanimated": "^3.17.4",
+    "react-native-section-list-get-item-layout": "^2.2.3",
+    "react-native-worklets": "^0.4.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@types/react": "~19.0.10",
+    "react-native-svg": "^15.12.1",
+    "typescript": "~5.8.3"
+  },
+  "private": true
+}

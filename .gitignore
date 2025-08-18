@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# ide
+.idea/
+
+# deps
+node_modules/
+
+# prod
+dist/
