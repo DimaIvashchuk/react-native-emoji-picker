@@ -1,5 +1,5 @@
 {
-  "name": "react-native-emoji-picker",
+  "name": "react-native-emoji-chooser",
   "description": "A customizable emoji picker for React Native",
   "version": "0.1.0",
   "main": "dist/index.js",
