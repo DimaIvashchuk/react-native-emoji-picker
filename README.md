@@ -2,9 +2,9 @@
 
 A customizable and lightweight Emoji Picker component for React Native applications, built to provide a seamless emoji selection experience with support for multiple languages, themes, and layouts.
 
-<div style="display: flex; justify-content: center; gap: 10px;">
-  <img src="https://github.com/DimaIvashchuk/react-native-emoji-picker/blob/master/gif/dark.gif" alt="Demo dark" width="400px"/>
-  <img src="https://github.com/DimaIvashchuk/react-native-emoji-picker/blob/master/gif/white.gif" alt="Demo white" width="400px"/>
+<div style="display: flex; justify-content: center; gap: 40px;">
+  <img src="https://github.com/DimaIvashchuk/react-native-emoji-picker/blob/master/gif/dark.gif" alt="Demo dark" height="400px"/>
+  <img src="https://github.com/DimaIvashchuk/react-native-emoji-picker/blob/master/gif/white.gif" alt="Demo white" height="400px"/>
 </div>
 
 ## Features
