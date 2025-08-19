@@ -5,6 +5,7 @@ import {
   SectionList,
   FlatList,
   TextInputProps,
+  ViewToken,
 } from 'react-native';
 import { charFromEmojiObject, deepMerge } from './utils';
 import { Category, DeepPartial, Emoji, Translation } from './types';
@@ -106,11 +107,13 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
         return {
           title: translationObject.categories[key as Category],
           data: [recentEmojis],
+          dataName: value.dataName,
         };
       }
 
       return ({
         title: translationObject.categories[key as Category] || key,
+        dataName: value.dataName,
         data: [
           filteredEmojies
             .filter((emoji) => emoji.category === value.dataName)
@@ -145,7 +148,6 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
 
   const onSelectCategory = useCallback(
     (category: Category, index: number) => {
-      setSelectedCategory(category);
       sectionListRef.current?.scrollToLocation({
         sectionIndex: index,
         itemIndex: 0,
@@ -183,6 +185,27 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
     );
   }, [colSize, onEmojiPress]);
 
+  const onViewableItemsChanged = useCallback(({ viewableItems }: {
+    viewableItems: ViewToken<Emoji[]>[];
+    changed: ViewToken<Emoji[]>[];
+}) => {
+    const firstVisibleSection = viewableItems.find(
+      (item) => item.isViewable && item.section
+    );
+    if (firstVisibleSection) {
+      const visibleSectionDataTitle = firstVisibleSection.section.dataName;
+
+      const category = Object.entries(Categories).find(([key, value]) => {
+
+        return visibleSectionDataTitle === value.dataName;
+      });
+
+      if (category) {
+        setSelectedCategory(category[0] as Category);
+      }
+    }
+  }, [translationObject]);
+
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY).then((data) => {
       if (data) {
@@ -199,6 +222,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
         <TextInput
           style={[styles.searchBarTextInputStyle, themeMode.searchbar.textInput]}
           placeholder={translationObject.textInput.placeholder}
+          placeholderTextColor={themeMode.searchbar.placeholderColor}
           clearButtonMode="always"
           returnKeyType="done"
           autoCorrect={false}
@@ -215,6 +239,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
               index: number,
             ) => { length: number; offset: number; index: number }
           }
+          onViewableItemsChanged={onViewableItemsChanged}
           horizontal={false}
           contentContainerStyle={[styles.sectionListContentContainerStyle, themeMode.flatList.container]}
           ref={sectionListRef}
@@ -255,7 +280,6 @@ const styles = StyleSheet.create({
   searchBarContainerStyle: {
     width: '100%',
     zIndex: 1,
-    backgroundColor: 'rgba(255,255,255,0.75)',
   },
   searchBarTextInputStyle: {
     ...Platform.select({

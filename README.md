@@ -3,6 +3,7 @@
 A customizable and lightweight Emoji Picker component for React Native applications, built to provide a seamless emoji selection experience with support for multiple languages, themes, and layouts.
 
 ## Features
+- **Render**: Render within bottom sheet or as a standalone view
 - **Customizable Themes**: Supports light and dark modes with deep partial theme customization.
 - **Multi-language Support**: Configurable translations for category names and text input placeholders.
 - **Flexible Layout**: Adjustable column count for emoji grid display.
@@ -29,7 +30,9 @@ import { StatusBar } from 'expo-status-bar';
 
 export default function App() {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
   const [language, setLanguage] = useState('en');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
@@ -41,23 +44,34 @@ export default function App() {
 
   return (
     <GestureHandlerRootView>
-      <StatusBar style="auto" />
+      <StatusBar style={theme === 'light' ? 'light' : 'dark'} />
       <BottomSheetModalProvider>
-        <View style={styles.container}>
+         <View style={[styles.container, { backgroundColor: theme === 'light' ? '#fff' : '#000' }]}>
           <Button
             title="Open Emoji Picker"
             onPress={handlePresentModalPress}
           />
-          <Button
+           <Button
             title="Change Language"
             onPress={() => setLanguage(language === 'en' ? 'uk' : 'en')}
           />
+          <Button
+            title="Change Theme"
+            onPress={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+          />
         </View>
-        <BottomSheetModal ref={bottomSheetModalRef} enableDynamicSizing enablePanDownToClose={true}>
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          handleIndicatorStyle={{ backgroundColor: theme === 'light' ? '#000' : '#fff' }}
+          backgroundStyle={{ backgroundColor: theme === 'light' ? '#fff' : '#111827' }}
+          enableDynamicSizing
+          enablePanDownToClose={true}
+        >
+          {/* Fixed haight is required so its work with bottom sheet */}
           <BottomSheetView style={{ height: 700 }}>
             <EmojiPicker
               onSelect={onSelect}
-              mode="light"
+              mode={theme}
               lang={language}
               columnCount={6}
               theme={{
@@ -65,10 +79,17 @@ export default function App() {
                   toolbar: {
                     container: {
                       paddingBottom: 24,
-                    },
-                  },
+                    }
+                  }
                 },
-              }}
+                dark: {
+                  toolbar: {
+                    container: {
+                      paddingBottom: 24,
+                    }
+                  }
+                }
+              }}  
             />
           </BottomSheetView>
         </BottomSheetModal>
@@ -134,7 +155,8 @@ export interface Theme {
   };
   searchbar: {
     container?: StyleProp<ViewStyle>;
-    textInput?: StyleProp<TextStyle>;
+    textInput: StyleProp<TextStyle>;
+    placeholderColor: string;
   };
   flatList: {
     container?: StyleProp<ViewStyle>;

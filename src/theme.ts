@@ -10,7 +10,8 @@ export interface Theme {
   };
   searchbar: {
     container?: StyleProp<ViewStyle>;
-    textInput?: StyleProp<TextStyle>;
+    textInput: StyleProp<TextStyle>;
+    placeholderColor: string;
   };
   flatList: {
     container?: StyleProp<ViewStyle>;
@@ -38,8 +39,13 @@ export const theme: ModedTheme = {
     },
     searchbar: {
       container: {
-        backgroundColor: '#f0f0f0',
+        backgroundColor: '#fff',
       },
+      textInput: {
+        color: '#111827',
+        backgroundColor: '#F7F8FA',
+      },
+      placeholderColor: '#808999',
     },
     flatList: {
       section: {
@@ -56,14 +62,18 @@ export const theme: ModedTheme = {
         activeColor: '#216BFC',
       },
       container: {
-        backgroundColor: '#f0f0f0',
+        backgroundColor: '#12151F',
       },
     },
     searchbar: {
-
       container: {
-        backgroundColor: '#f0f0f0',
+        backgroundColor: '#111827',
       },
+      textInput: {
+        color: '#fff',
+        backgroundColor: '#1F2937'
+      },
+      placeholderColor: '#9CA3AF',
     },
     flatList: {
       section: {
