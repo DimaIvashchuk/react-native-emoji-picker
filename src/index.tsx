@@ -285,11 +285,11 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         height: 36,
-        paddingLeft: 8,
-        borderRadius: 10,
         backgroundColor: '#E5E8E9',
       },
     }),
+    paddingLeft: 8,
+    borderRadius: 10,
     margin: 8,
   },
 });
