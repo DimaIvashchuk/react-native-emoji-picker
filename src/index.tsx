@@ -4,6 +4,7 @@ import {
   StyleSheet,
   SectionList,
   FlatList,
+  TextInputProps,
 } from 'react-native';
 import { charFromEmojiObject, deepMerge } from './utils';
 import { Category, DeepPartial, Emoji, Translation } from './types';
@@ -27,9 +28,10 @@ type EmojiPickerProps = {
   lang?: string;
   onSelect: (emoji: string) => void;
   toolbarProps?: Pick<ToolbarProps, 'iconWidth'>;
+  searchBarProps?: Partial<TextInputProps>;
 };
 
-const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount = 6, lang = 'en', onSelect, theme: customTheme, translation: customTranslation, toolbarProps }) => {
+const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount = 6, lang = 'en', onSelect, theme: customTheme, translation: customTranslation, toolbarProps, searchBarProps }) => {
   const [isReady, setIsReady] = useState(false);
   const [colSize, setColSize] = useState(0);
   const [recentEmojis, setRecentEmojis] = useState<Emoji[]>([]);
@@ -193,15 +195,16 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
 
   return (
     <View style={[styles.container]} onLayout={onLayout}>
-      <View style={styles.searchBarContainerStyle}>
+      <View style={[styles.searchBarContainerStyle, themeMode.searchbar.container]}>
         <TextInput
-          style={styles.searchBarTextInputStyle}
+          style={[styles.searchBarTextInputStyle, themeMode.searchbar.textInput]}
           placeholder={translationObject.textInput.placeholder}
           clearButtonMode="always"
           returnKeyType="done"
           autoCorrect={false}
           value={searchQuery}
           onChangeText={handleSearch}
+          {...searchBarProps}
         />
       </View>
       {isReady && (
@@ -213,7 +216,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
             ) => { length: number; offset: number; index: number }
           }
           horizontal={false}
-          contentContainerStyle={[styles.sectionListContentContainerStyle]}
+          contentContainerStyle={[styles.sectionListContentContainerStyle, themeMode.flatList.container]}
           ref={sectionListRef}
           sections={sections}
           renderItem={renderSectionItem}
@@ -222,7 +225,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
             if (section.data[0].length === 0) {
               return null;
             }
-            return <Text style={[styles.sectionHeaderStyle]}>{section.title}</Text>;
+            return <Text style={[styles.sectionHeaderStyle, themeMode.flatList.section.header]}>{section.title}</Text>;
           }}
         />
       )}

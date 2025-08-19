@@ -99,7 +99,8 @@ const styles = StyleSheet.create({
 | `translation`   | `DeepPartial<Translation>`              | Custom translations for categories and text input placeholder.               | `{}`           |
 | `lang`          | `string`                                | Language code for translations (e.g., `'en'`, `'uk'`).                      | `'en'`         |
 | `onSelect`      | `(emoji: string) => void`               | Callback function triggered when an emoji is selected.                       | **Required**   |
-| `toolbarProps`  | `Pick<ToolbarProps, 'iconWidth'>`       | Props for customizing the toolbar, such as icon width.                       | `{}`           |
+| `toolbarProps`  | `Pick<ToolbarProps, 'iconWidth'>`       | Props for customizing the toolbar.                       | `{}`           |
+| `searchBarProps`  | `Partial<TextInputProps>`       | Props for customizing the searchbar.                       | `{}`           |
 
 ## Types
 
@@ -129,8 +130,18 @@ export interface Theme {
       defaultColor: string;
       activeColor: string;
     };
-    container: ViewStyle;
+    container: StyleProp<ViewStyle>;
   };
+  searchbar: {
+    container?: StyleProp<ViewStyle>;
+    textInput?: StyleProp<TextStyle>;
+  };
+  flatList: {
+    container?: StyleProp<ViewStyle>;
+    section: {
+      header: StyleProp<TextStyle>;
+    }
+  }
 }
 ```
 
