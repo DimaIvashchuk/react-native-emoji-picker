@@ -21,6 +21,8 @@ A customizable and lightweight Emoji Picker component for React Native applicati
 - **Flexible Layout**: Adjustable column count for emoji grid display.
 - **Recent Emojis**: Automatically tracks and displays recently used emojis.
 - **400+ Emojies**: Emojies sourced from [emoji-datasource](github.com/iamcal/emoji-data) 
+- **Compatible with gifted chat**
+
 
 ## Installation
 
