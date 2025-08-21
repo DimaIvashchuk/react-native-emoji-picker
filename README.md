@@ -25,7 +25,7 @@ A customizable and lightweight Emoji Picker component for React Native applicati
 ## Installation
 
 ```bash
-npm install react-native-emoji-picker
+npm install react-native-emoji-chooser
 ```
 
 ## Usage
@@ -34,7 +34,7 @@ Below is an example of how to integrate the Emoji Picker into your React Native 
 
 ```tsx
 import { Button, StyleSheet, Text, View } from 'react-native';
-import EmojiPicker from 'react-native-emoji-picker';
+import EmojiPicker from 'react-native-emoji-chooser';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useCallback, useRef, useState } from 'react';
