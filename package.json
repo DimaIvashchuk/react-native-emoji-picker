@@ -5,10 +5,14 @@
   "main": "dist/index.js",
   "keywords": [
     "react-native",
+    "expo",
+    "emoji-picker",
+    "emoji-chooser",
+    "emoji-select",
+    "react-native-emoji-picker",
     "emoji",
     "picker",
-    "component",
-    "expo"
+    "component"
   ],
   "scripts": {
     "build": "tsc --watch",
