@@ -2,13 +2,13 @@
 
 A customizable and lightweight Emoji Picker component for React Native applications, built to provide a seamless emoji selection experience with support for multiple languages, themes, and layouts.
 
-<div style="display: flex; justify-content: center; gap: 40px;">
+<div style="display: flex; justify-content: center; column-gap: 40px;">
   <img src="https://github.com/DimaIvashchuk/react-native-emoji-picker/blob/master/assets/screenshot1.png" alt="Demo static white" height="400px"/>
-  <img src="https://github.com/DimaIvashchuk/react-native-emoji-picker/blob/master/assets/screenshot1.png" alt="Demo static search" height="400px"/>
-  <img src="https://github.com/DimaIvashchuk/react-native-emoji-picker/blob/master/assets/screenshot1.png" alt="Demo static dark" height="400px"/>
+  <img src="https://github.com/DimaIvashchuk/react-native-emoji-picker/blob/master/assets/screenshot2.png" alt="Demo static search" height="400px"/>
+  <img src="https://github.com/DimaIvashchuk/react-native-emoji-picker/blob/master/assets/screenshot3.png" alt="Demo static dark" height="400px"/>
 </div>
 
-<div style="display: flex; justify-content: center; gap: 40px;">
+<div style="display: flex; justify-content: center; column-gap: 40px;">
   <img src="https://github.com/DimaIvashchuk/react-native-emoji-picker/blob/master/assets/dark.gif" alt="Demo dark" height="400px"/>
   <img src="https://github.com/DimaIvashchuk/react-native-emoji-picker/blob/master/assets/white.gif" alt="Demo white" height="400px"/>
   <img src="https://github.com/DimaIvashchuk/react-native-emoji-picker/blob/master/assets/gifted-chat.gif" alt="Demo Gifted Chat" height="400px"/>
