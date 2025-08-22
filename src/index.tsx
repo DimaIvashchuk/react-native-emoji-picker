@@ -50,7 +50,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
 const onLayout = useCallback(
   (e: LayoutChangeEvent) => {
     const { width } = e.nativeEvent.layout;
-    const newColSize = Math.floor((width - 5 * 8 - 8 * 2) / columnCount);
+    const newColSize = Math.floor((width - 5 * 8) / columnCount);
     if (newColSize !== colSize) {
       setColSize(newColSize);
       setIsReady(true);
@@ -175,9 +175,7 @@ const onLayout = useCallback(
         style={{
           flexDirection: 'row',
           flexWrap: 'wrap',
-          // columnGap: 8,
-          justifyContent: 'space-between',
-          paddingHorizontal: 8,
+          columnGap: 8,
         }}
       >
         {item.map((emoji) => (
