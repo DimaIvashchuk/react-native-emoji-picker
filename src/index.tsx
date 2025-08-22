@@ -3,11 +3,10 @@ import {
   Text,
   StyleSheet,
   SectionList,
-  FlatList,
   TextInputProps,
   ViewToken,
 } from 'react-native';
-import { charFromEmojiObject, deepMerge } from './utils';
+import { charFromEmojiObject, deepMerge, throttle } from './utils';
 import { Category, DeepPartial, Emoji, Translation } from './types';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
@@ -48,15 +47,17 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
 
   const sectionListRef = useRef<SectionList>(null);
 
-  const onLayout = useCallback(
-    (e: LayoutChangeEvent) => {
-      if (isReady) return;
-      const { width } = e.nativeEvent.layout;
-      setColSize(Math.floor((width - 5 * 8 - 8 * 2) / columnCount));
+const onLayout = useCallback(
+  (e: LayoutChangeEvent) => {
+    const { width } = e.nativeEvent.layout;
+    const newColSize = Math.floor((width - 5 * 8 - 8 * 2) / columnCount);
+    if (newColSize !== colSize) {
+      setColSize(newColSize);
       setIsReady(true);
-    },
-    [isReady],
-  );
+    }
+  },
+  [colSize, columnCount]
+);
 
   const setRecentEmojiAsync = useCallback(async (emoji: Emoji) => {
     try {
@@ -100,9 +101,10 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
     return translation[lang];
   }, [lang, customTranslation]);
 
+  const filteredEmojies = useMemo(() => filterEmojiesBySearch(searchQuery), [searchQuery]);
+
   const sections = useMemo(() => {
-    const filteredEmojies = filterEmojiesBySearch(searchQuery);
-    const emojiSections = Object.entries(Categories).map(([key, value]) => {
+    return Object.entries(Categories).map(([key, value]) => {
       if (key === 'recents') {
         return {
           title: translationObject.categories[key as Category],
@@ -111,7 +113,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
         };
       }
 
-      return ({
+      return {
         title: translationObject.categories[key as Category] || key,
         dataName: value.dataName,
         data: [
@@ -119,10 +121,9 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
             .filter((emoji) => emoji.category === value.dataName)
             .sort((a, b) => a.sort_order - b.sort_order),
         ],
-      });
+      };
     });
-    return emojiSections;
-  }, [filterEmojiesBySearch, recentEmojis, searchQuery]);
+  }, [filteredEmojies, recentEmojis, translationObject]);
 
   const _getItemLayout = useCallback(
     sectionListGetItemLayout({
@@ -170,41 +171,45 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
 
   const renderSectionItem = useCallback(({ item }: { item: Emoji[] }) => {
     return (
-      <FlatList
-        data={item}
-        columnWrapperStyle={{
-          columnGap: 8,
-          rowGap: 8,
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          // columnGap: 8,
+          justifyContent: 'space-between',
+          paddingHorizontal: 8,
         }}
-        numColumns={columnCount}
-        renderItem={({ item }) => (
-          <EmojiCell emoji={item} colSize={colSize} onPress={() => onEmojiPress(item)} />
-        )}
-        keyExtractor={(listItem) => listItem.name}
-      />
+      >
+        {item.map((emoji) => (
+          <EmojiCell
+            key={emoji.unified}
+            unified={emoji.unified}
+            colSize={colSize}
+            onPress={() => onEmojiPress(emoji)}
+          />
+        ))}
+      </View>
     );
   }, [colSize, onEmojiPress]);
 
-  const onViewableItemsChanged = useCallback(({ viewableItems }: {
-    viewableItems: ViewToken<Emoji[]>[];
-    changed: ViewToken<Emoji[]>[];
-}) => {
-    const firstVisibleSection = viewableItems.find(
-      (item) => item.isViewable && item.section
-    );
-    if (firstVisibleSection) {
-      const visibleSectionDataTitle = firstVisibleSection.section.dataName;
-
-      const category = Object.entries(Categories).find(([key, value]) => {
-
-        return visibleSectionDataTitle === value.dataName;
-      });
-
-      if (category) {
-        setSelectedCategory(category[0] as Category);
-      }
-    }
-  }, [translationObject]);
+  const onViewableItemsChanged = useCallback(
+    throttle(
+      ({ viewableItems }: { viewableItems: ViewToken<Emoji[]>[]; changed: ViewToken<Emoji[]>[] }) => {
+        const firstVisibleSection = viewableItems.find((item) => item.isViewable && item.section);
+        if (firstVisibleSection) {
+          const visibleSectionDataTitle = firstVisibleSection.section.dataName;
+          const category = Object.entries(Categories).find(
+            ([, value]) => visibleSectionDataTitle === value.dataName
+          );
+          if (category) {
+            setSelectedCategory(category[0] as Category);
+          }
+        }
+      },
+      300
+    ),
+  [translationObject]
+);
 
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY).then((data) => {
@@ -241,10 +246,13 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
           }
           onViewableItemsChanged={onViewableItemsChanged}
           horizontal={false}
+          initialNumToRender={10}
+          windowSize={21}
           contentContainerStyle={[styles.sectionListContentContainerStyle, themeMode.flatList.container]}
           ref={sectionListRef}
           sections={sections}
           renderItem={renderSectionItem}
+          keyExtractor={(item, index) => sections[index].dataName || sections[index].title}
           stickySectionHeadersEnabled={false}
           renderSectionHeader={({ section }) => {
             if (section.data[0].length === 0) {
@@ -275,8 +283,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_600SemiBold',
     lineHeight: 18,
     marginVertical: 8,
+    marginLeft: 8,
   },
-
   searchBarContainerStyle: {
     width: '100%',
     zIndex: 1,

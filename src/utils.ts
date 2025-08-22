@@ -20,7 +20,17 @@ const charFromUtf16 = (utf16: string) =>
 
 export const charFromEmojiObject = (obj: Emoji) => charFromUtf16(obj.unified);
 
-// Deep merge function
+const emojiCache = new Map<string, string>();
+
+export const charFromEmojiString = (unified: string): string => {
+  if (emojiCache.has(unified)) {
+    return emojiCache.get(unified)!;
+  }
+  const result = charFromUtf16(unified);
+  emojiCache.set(unified, result);
+  return result;
+};
+
 export function deepMerge<T extends Record<string, any>, S extends Record<string, any>>(target: T, source: S): T & S {
   const output: any = { ...target };
   for (const key in source) {
@@ -40,4 +50,28 @@ export function deepMerge<T extends Record<string, any>, S extends Record<string
     }
   }
   return output;
+}
+
+export function throttle<T extends (...args: any[]) => void>(func: T, delay: number): (...args: Parameters<T>) => void {
+  let lastCall: number = 0;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  let lastArgs: Parameters<T> | null = null;
+
+  return function (...args: Parameters<T>): void {
+    const now = Date.now();
+    const timeSinceLastCall = now - lastCall;
+
+    lastArgs = args;
+
+    if (timeSinceLastCall >= delay) {
+      lastCall = now;
+      func(...(lastArgs ?? undefined));
+    } else if (!timeoutId) {
+      timeoutId = setTimeout(() => {
+        lastCall = Date.now();
+        func(...(lastArgs ?? []));
+        timeoutId = null;
+      }, delay - timeSinceLastCall);
+    }
+  };
 }
