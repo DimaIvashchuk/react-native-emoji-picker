@@ -35,7 +35,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
   const [isReady, setIsReady] = useState(false);
   const [colSize, setColSize] = useState(0);
   const [recentEmojis, setRecentEmojis] = useState<Emoji[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category>('smileys_and_emotion');
   const [searchQuery, setSearchQuery] = useState('');
 
   const themeMode = useMemo(() => {
@@ -47,17 +47,18 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
 
   const sectionListRef = useRef<SectionList>(null);
 
-const onLayout = useCallback(
-  (e: LayoutChangeEvent) => {
-    const { width } = e.nativeEvent.layout;
-    const newColSize = Math.floor((width - 5 * 8) / columnCount);
-    if (newColSize !== colSize) {
-      setColSize(newColSize);
-      setIsReady(true);
-    }
-  },
-  [colSize, columnCount]
-);
+  const onLayout = useCallback(
+    (e: LayoutChangeEvent) => {
+      const { width } = e.nativeEvent.layout;
+      const newColSize = Math.floor((width - 5 * 8 - 16) / columnCount);
+      if (newColSize !== colSize) {
+        setColSize(newColSize);
+        setIsReady(true);
+      }
+    },
+    [colSize, columnCount]
+  );
+
 
   const setRecentEmojiAsync = useCallback(async (emoji: Emoji) => {
     try {
@@ -94,6 +95,17 @@ const onLayout = useCallback(
     );
   }, []);
 
+  const filterRecentEmojiesBySearch = useCallback((text: string) => {
+    if (!text.trim()) return recentEmojis;
+    return recentEmojis.filter(
+      (emoji) =>
+        emoji.name.toLowerCase().includes(text.toLowerCase()) ||
+        emoji.short_name.toLowerCase().includes(text.toLowerCase()) ||
+        emoji.short_names.some((shortName) => shortName.toLowerCase().includes(text.toLowerCase())),
+    );
+  }, [recentEmojis]);
+
+
   const translationObject = useMemo(() => {
     if (customTranslation && customTranslation[lang]) {
       return deepMerge(translation[lang], customTranslation[lang]);
@@ -102,13 +114,14 @@ const onLayout = useCallback(
   }, [lang, customTranslation]);
 
   const filteredEmojies = useMemo(() => filterEmojiesBySearch(searchQuery), [searchQuery]);
+  const filteredRecentEmojies = useMemo(() => filterRecentEmojiesBySearch(searchQuery), [searchQuery]);
 
   const sections = useMemo(() => {
-    return Object.entries(Categories).map(([key, value]) => {
+    return Object.entries(Categories).filter(([key]) => key === 'recents' && recentEmojis.length > 0 ? true : key !== 'recents').map(([key, value]) => {
       if (key === 'recents') {
         return {
           title: translationObject.categories[key as Category],
-          data: [recentEmojis],
+          data: [filteredRecentEmojies],
           dataName: value.dataName,
         };
       }
@@ -123,7 +136,7 @@ const onLayout = useCallback(
         ],
       };
     });
-  }, [filteredEmojies, recentEmojis, translationObject]);
+  }, [filteredEmojies, filteredRecentEmojies, translationObject]);
 
   const _getItemLayout = useCallback(
     sectionListGetItemLayout({
@@ -163,11 +176,12 @@ const onLayout = useCallback(
       <Toolbar
         selectedCategory={selectedCategory || 'recents'}
         onSelectCategory={onSelectCategory}
+        withRecent={recentEmojis.length > 0}
         theme={themeMode}
         {...toolbarProps}
       />
     );
-  }, [onSelectCategory, selectedCategory, themeMode, toolbarProps]);
+  }, [onSelectCategory, selectedCategory, themeMode, toolbarProps, recentEmojis.length]);
 
   const renderSectionItem = useCallback(({ item }: { item: Emoji[] }) => {
     return (
@@ -193,7 +207,7 @@ const onLayout = useCallback(
   const onViewableItemsChanged = useCallback(
     throttle(
       ({ viewableItems }: { viewableItems: ViewToken<Emoji[]>[]; changed: ViewToken<Emoji[]>[] }) => {
-        const firstVisibleSection = viewableItems.find((item) => item.isViewable && item.section);
+        const firstVisibleSection = viewableItems.find((item) => item.isViewable && item.section && item.index !== null);
         if (firstVisibleSection) {
           const visibleSectionDataTitle = firstVisibleSection.section.dataName;
           const category = Object.entries(Categories).find(
@@ -206,8 +220,8 @@ const onLayout = useCallback(
       },
       300
     ),
-  [translationObject]
-);
+    [translationObject]
+  );
 
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY).then((data) => {
