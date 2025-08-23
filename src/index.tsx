@@ -114,7 +114,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ mode = 'light', columnCount =
   }, [lang, customTranslation]);
 
   const filteredEmojies = useMemo(() => filterEmojiesBySearch(searchQuery), [searchQuery]);
-  const filteredRecentEmojies = useMemo(() => filterRecentEmojiesBySearch(searchQuery), [searchQuery]);
+  const filteredRecentEmojies = useMemo(() => filterRecentEmojiesBySearch(searchQuery), [searchQuery, recentEmojis]);
 
   const sections = useMemo(() => {
     return Object.entries(Categories).filter(([key]) => key === 'recents' && recentEmojis.length > 0 ? true : key !== 'recents').map(([key, value]) => {
